@@ -1,12 +1,13 @@
 {
-  "ApplicationName": "Development",
+  "ApplicationName": "Default",
   "UserSettings": {
-    "DefaultRole": "Admin"
+    "DefaultRole": "User"
   },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning"
     }
-  }
+  },
+  "AllowedHosts": "*"
 }

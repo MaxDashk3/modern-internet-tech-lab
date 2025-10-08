@@ -7,6 +7,22 @@ using ClassLibrary1.DataModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.Sources.Clear();
+builder.Configuration.AddJsonFile("sharedsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
+}
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true);
+}
+builder.Configuration.AddEnvironmentVariables();
+
+//Console.WriteLine(builder.Configuration["ApplicationName"]);
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
