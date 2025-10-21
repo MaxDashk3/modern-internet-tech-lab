@@ -4,6 +4,7 @@ using ClassLibrary1.Data;
 using ClassLibrary1.Interfaces;
 using ClassLibrary1.Repositories;
 using ClassLibrary1.DataModels;
+using WebApplication1.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ builder.Configuration.AddEnvironmentVariables();
 var connectionString = builder.Configuration["DefaultConnection"] ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 builder.Services.AddScoped<IAppSqlServerRepository, AppSqlServerRepository>();
 
