@@ -4,6 +4,8 @@ using ClassLibrary1.Data;
 using ClassLibrary1.Interfaces;
 using ClassLibrary1.Repositories;
 using ClassLibrary1.DataModels;
+using ClassLibrary1.Configuration;
+using ClassLibrary1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +23,16 @@ if (builder.Environment.IsProduction())
 }
 builder.Configuration.AddEnvironmentVariables();
 
-//Console.WriteLine(builder.Configuration["ApplicationName"]);
+// Configure strongly typed settings using the theoretical approach
+var appConfiguration = builder.Configuration.Get<AppSettings>();
+builder.Services.AddSingleton(appConfiguration);
+
+// Add configuration service
+builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
 
 // Add services to the container.
-var connectionString = builder.Configuration["DefaultConnection"] ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = appConfiguration.ConnectionStrings.DefaultConnection ?? 
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
