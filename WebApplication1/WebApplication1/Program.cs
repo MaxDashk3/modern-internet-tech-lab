@@ -4,7 +4,7 @@ using ClassLibrary1.Data;
 using ClassLibrary1.Interfaces;
 using ClassLibrary1.Repositories;
 using ClassLibrary1.DataModels;
-using WebApplication1.Models;
+using WebApplication1.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +15,13 @@ builder.Configuration.AddJsonFile("sharedsettings.json", optional: false, reload
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
+    builder.Configuration.AddUserSecrets<Program>(optional: true);
 }
 if (builder.Environment.IsProduction())
 {
     builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true);
+    builder.Configuration.AddEnvironmentVariables();
 }
-builder.Configuration.AddEnvironmentVariables();
 
 //Console.WriteLine(builder.Configuration["ApplicationName"]);
 

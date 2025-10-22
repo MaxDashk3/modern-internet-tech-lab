@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Models;
 using ClassLibrary1.Interfaces;
 using Microsoft.Extensions.Options;
+using WebApplication1.Configurations;
 
 namespace WebApplication1.Controllers
 {
@@ -12,7 +13,7 @@ namespace WebApplication1.Controllers
         private readonly IAppSqlServerRepository _repository;
         private readonly ApiSettings _apiSettings;
 
-        public HomeController(ILogger<HomeController> logger, IAppSqlServerRepository repository)
+        public HomeController(ILogger<HomeController> logger, IAppSqlServerRepository repository, IOptions<ApiSettings> apiSettings)
         {
             _logger = logger;
             _repository = repository;
