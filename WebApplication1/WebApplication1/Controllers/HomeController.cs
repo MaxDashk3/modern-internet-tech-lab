@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Models;
 using ClassLibrary1.Interfaces;
-using ClassLibrary1.Services;
 using Microsoft.Extensions.Options;
 using WebApplication1.Configurations;
 
@@ -12,26 +11,24 @@ namespace WebApplication1.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IAppSqlServerRepository _repository;
-        private readonly ApiSettings _apiSettings;
-        private readonly IConfigurationService _configurationService;
+        private readonly AppConfiguration _appConfiguration;
 
-        public HomeController(ILogger<HomeController> logger, IAppSqlServerRepository repository, IConfigurationService configurationService, IOptions<ApiSettings> apiSettings)
+        public HomeController(ILogger<HomeController> logger, IAppSqlServerRepository repository, AppConfiguration appConfiguration)
         {
             _logger = logger;
             _repository = repository;
-            _configurationService = configurationService;
-            _apiSettings = apiSettings.Value;
+            _appConfiguration = appConfiguration;
         }
 
         public IActionResult Index()
         {
-            // Pass configuration data to view
-            ViewBag.ApplicationName = _configurationService.GetApplicationName();
-            ViewBag.DefaultRole = _configurationService.GetDefaultRole();
-            ViewBag.MaxLoginAttempts = _configurationService.AppSettings.UserSettings.MaxLoginAttempts;
-            ViewBag.RequireEmailConfirmation = _configurationService.AppSettings.UserSettings.RequireEmailConfirmation;
-            
-            _logger.LogInformation($"��������������� API ����: {_apiSettings.ApiKey.Substring(0, Math.Min(10, _apiSettings.ApiKey.Length))}...");
+            ViewBag.ApplicationName = _appConfiguration.AppSettings.ApplicationName;
+            ViewBag.DefaultRole = _appConfiguration.AppSettings.UserSettings.DefaultRole;
+            ViewBag.MaxLoginAttempts = _appConfiguration.AppSettings.UserSettings.MaxLoginAttempts;
+            ViewBag.RequireEmailConfirmation = _appConfiguration.AppSettings.UserSettings.RequireEmailConfirmation;
+
+            var apiKey = _appConfiguration.ApiSettings.ApiKey;
+            _logger.LogInformation($"Current API key: {apiKey.Substring(0, Math.Min(10, apiKey.Length))}...");
             return View();
         }
 
@@ -42,16 +39,16 @@ namespace WebApplication1.Controllers
         [HttpGet("api-info")]
         public IActionResult ApiInfo()
         {
-            // ���������� ���������� ��� API Key (����������� ��� �������)
-            var maskedKey = _apiSettings.ApiKey.Length > 10
-                ? _apiSettings.ApiKey.Substring(0, 10) + "..." + _apiSettings.ApiKey.Substring(_apiSettings.ApiKey.Length - 4)
+            var apiKey = _appConfiguration.ApiSettings.ApiKey;
+            var maskedKey = apiKey.Length > 10
+                ? apiKey.Substring(0, 10) + "..." + apiKey.Substring(apiKey.Length - 4)
                 : "***";
 
             return Ok(new
             {
                 ApiKeyPrefix = maskedKey,
                 Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production",
-                Message = "ApiKey ������ ����������� ��� ����� ���������"
+                Message = "ApiKey was successfully retrieved"
             });
         }
         [HttpGet("UserId/{email}")]

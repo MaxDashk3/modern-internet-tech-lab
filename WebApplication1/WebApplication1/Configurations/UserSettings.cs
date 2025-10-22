@@ -1,4 +1,4 @@
-namespace ClassLibrary1.Configuration
+namespace WebApplication1.Configuration
 {
     public class UserSettings
     {

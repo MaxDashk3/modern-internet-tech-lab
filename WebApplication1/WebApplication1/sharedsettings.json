@@ -5,9 +5,6 @@
       "DefaultRole": "User",
       "MaxLoginAttempts": 5,
       "RequireEmailConfirmation": true
-    },
-    "ConnectionStrings": {
-      "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=WebApp1_Shared;Trusted_Connection=true;MultipleActiveResultSets=true"
     }
   },
   "Logging": {
