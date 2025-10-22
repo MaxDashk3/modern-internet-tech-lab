@@ -6,6 +6,7 @@ using ClassLibrary1.Repositories;
 using ClassLibrary1.DataModels;
 using ClassLibrary1.Configuration;
 using ClassLibrary1.Services;
+using WebApplication1.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +17,13 @@ builder.Configuration.AddJsonFile("sharedsettings.json", optional: false, reload
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
+    builder.Configuration.AddUserSecrets<Program>(optional: true);
 }
 if (builder.Environment.IsProduction())
 {
     builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true);
+    builder.Configuration.AddEnvironmentVariables();
 }
-builder.Configuration.AddEnvironmentVariables();
 
 // Configure strongly typed settings using the theoretical approach
 var appConfiguration = builder.Configuration.Get<AppSettings>();
@@ -35,6 +37,8 @@ var connectionString = appConfiguration.ConnectionStrings.DefaultConnection ??
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 builder.Services.AddScoped<IAppSqlServerRepository, AppSqlServerRepository>();
 

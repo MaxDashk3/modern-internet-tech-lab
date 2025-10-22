@@ -13,8 +13,9 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=aspnet-WebApplication1-f955b5dd-28e7-4000-a52b-2122b19ca49b;Trusted_Connection=True;MultipleActiveResultSets=true"
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=aspnet-WebApplication1-f955b5dd-28e7-4000-a52b-2122b19ca49b;Trusted_Connection=True;MultipleActiveResultSets=true",
+        "ApiSettings__ApiKey": "PROD-API-KEY-9a8f7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7131;http://localhost:5041"
