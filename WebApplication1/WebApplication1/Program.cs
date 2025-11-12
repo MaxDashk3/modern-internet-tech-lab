@@ -4,8 +4,10 @@ using ClassLibrary1.Interfaces;
 using ClassLibrary1.Repositories;
 using ClassLibrary1.DataModels;
 using WebApplication1.Configurations;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+//var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 
 builder.Configuration.Sources.Clear();
 builder.Configuration.AddJsonFile("sharedsettings.json", optional: false, reloadOnChange: true)
@@ -28,7 +30,7 @@ AppConfiguration appConfiguration = builder.Configuration.Get<AppConfiguration>(
 builder.Services.AddSingleton(appConfiguration);
 
 
-// Add services to the container.
+//Add services to the container.
 var connectionString = appConfiguration.DefaultConnection ?? 
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -41,6 +43,14 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("VerifiedClient", policy =>
+    {
+        policy.RequireClaim("IsVerifiedClient", "True");
+    });
+});
 
 var app = builder.Build();
 
@@ -69,5 +79,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+app.MapControllers().RequireAuthorization();
 
 app.Run();

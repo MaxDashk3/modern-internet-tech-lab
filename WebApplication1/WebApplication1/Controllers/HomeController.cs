@@ -4,6 +4,7 @@ using WebApplication1.Models;
 using ClassLibrary1.Interfaces;
 using Microsoft.Extensions.Options;
 using WebApplication1.Configurations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication1.Controllers
 {
@@ -20,6 +21,7 @@ namespace WebApplication1.Controllers
             _appConfiguration = appConfiguration;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             ViewBag.ApplicationName = _appConfiguration.AppSettings.ApplicationName;
@@ -29,6 +31,12 @@ namespace WebApplication1.Controllers
 
             var apiKey = _appConfiguration.ApiSettings.ApiKey;
             _logger.LogInformation($"Current API key: {apiKey.Substring(0, Math.Min(10, apiKey.Length))}...");
+            return View();
+        }
+
+        [Authorize(Policy = "VerifiedClient")]
+        public IActionResult Archive()
+        {
             return View();
         }
 
