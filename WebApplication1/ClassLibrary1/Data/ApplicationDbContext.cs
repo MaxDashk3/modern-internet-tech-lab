@@ -15,5 +15,7 @@ namespace ClassLibrary1.Data
     : base(options)
         {
         }
+
+        public DbSet<Resource> Resources { get; set; }
     }
 }

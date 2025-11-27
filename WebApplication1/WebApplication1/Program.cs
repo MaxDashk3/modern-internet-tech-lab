@@ -5,6 +5,8 @@ using ClassLibrary1.Repositories;
 using ClassLibrary1.DataModels;
 using WebApplication1.Configurations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using WebApplication1.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
@@ -50,7 +52,12 @@ builder.Services.AddAuthorization(options =>
     {
         policy.RequireClaim("IsVerifiedClient", "True");
     });
+    
+    options.AddPolicy("CanEditResource", policy =>
+        policy.AddRequirements(new IsResourceOwnerRequirement()));
 });
+
+builder.Services.AddScoped<IAuthorizationHandler, ResourceAuthorizationHandler>();
 
 var app = builder.Build();
 

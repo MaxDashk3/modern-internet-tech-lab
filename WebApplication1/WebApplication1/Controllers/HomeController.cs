@@ -34,12 +34,6 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        [Authorize(Policy = "VerifiedClient")]
-        public IActionResult Archive()
-        {
-            return View();
-        }
-
         public IActionResult Privacy()
         {
             return View();
