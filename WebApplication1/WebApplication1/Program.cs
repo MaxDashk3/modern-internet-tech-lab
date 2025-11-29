@@ -7,6 +7,7 @@ using WebApplication1.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using WebApplication1.Authorization;
+using WebApplication1.Controllers.UniPortal.Web.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
@@ -27,13 +28,13 @@ if (builder.Environment.IsProduction())
 }
 
 // Configure strongly typed settings
-AppConfiguration appConfiguration = builder.Configuration.Get<AppConfiguration>() 
+AppConfiguration appConfiguration = builder.Configuration.Get<AppConfiguration>()
     ?? throw new InvalidOperationException("Failed to bind AppConfiguration.");
 builder.Services.AddSingleton(appConfiguration);
 
 
 //Add services to the container.
-var connectionString = appConfiguration.DefaultConnection ?? 
+var connectionString = appConfiguration.DefaultConnection ??
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -46,18 +47,29 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+//  АВТОРИЗАЦІЯ
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("VerifiedClient", policy =>
     {
         policy.RequireClaim("IsVerifiedClient", "True");
     });
-    
+
     options.AddPolicy("CanEditResource", policy =>
         policy.AddRequirements(new IsResourceOwnerRequirement()));
+
+    //  ПОЛІТИКА ДЛЯ "Преміум" – WorkingHours >= 100
+    options.AddPolicy("PremiumOnly", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddRequirements(new MinimumWorkingHoursRequirement(100));
+    });
 });
 
+// реєстрація хендлерів
 builder.Services.AddScoped<IAuthorizationHandler, ResourceAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, MinimumWorkingHoursHandler>();
+
 
 var app = builder.Build();
 
@@ -78,6 +90,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// автентифікація має йти перед авторизацією
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRequestLimiter(authLimit: 100, anonLimit: 20, window: TimeSpan.FromMinutes(1));
@@ -87,6 +101,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+// тут ми змушуємо усі контролери вимагати авторизацію;
 app.MapControllers().RequireAuthorization();
 
 app.Run();
