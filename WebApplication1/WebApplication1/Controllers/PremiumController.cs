@@ -11,10 +11,12 @@ namespace WebApplication1.Controllers
     public class PremiumController : Controller
     {
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public PremiumController(UserManager<User> userManager)
+        public PremiumController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // видаємо поточному користувачу клейм WorkingHours, це для тестування        
@@ -29,6 +31,7 @@ namespace WebApplication1.Controllers
                 {
                     // даємо 120 годин – цього достатньо для PremiumOnly (>=100)
                     await _userManager.AddClaimAsync(user, new Claim("WorkingHours", "120"));
+                    await _signInManager.RefreshSignInAsync(user);
                 }
             }
 

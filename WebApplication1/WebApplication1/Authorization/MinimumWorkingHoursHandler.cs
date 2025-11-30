@@ -15,8 +15,7 @@
                 MinimumWorkingHoursRequirement requirement)
             {
                 // Шукаємо клейм WorkingHours
-                var workingHoursClaim = context.User.FindFirst("WorkingHours");
-
+                var workingHoursClaim = context.User.Claims.FirstOrDefault(x => x.Type == "WorkingHours");
                 if (workingHoursClaim is null)
                 {
                     // немає клейму – доступ заборонений
