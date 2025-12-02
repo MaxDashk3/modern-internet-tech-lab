@@ -64,11 +64,16 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAuthenticatedUser();
         policy.AddRequirements(new MinimumWorkingHoursRequirement(100));
     });
+
+    // Custom policy for Forum
+    options.AddPolicy("ForumAccessRequired", policy =>
+        policy.AddRequirements(new ForumAccessRequirement()));
 });
 
 // реєстрація хендлерів
 builder.Services.AddScoped<IAuthorizationHandler, ResourceAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, MinimumWorkingHoursHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, ForumAccessHandler>();
 
 
 var app = builder.Build();
