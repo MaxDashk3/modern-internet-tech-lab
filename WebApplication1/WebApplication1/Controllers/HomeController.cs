@@ -5,6 +5,7 @@ using ClassLibrary1.Interfaces;
 using Microsoft.Extensions.Options;
 using WebApplication1.Configurations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 
 namespace WebApplication1.Controllers
 {
@@ -13,12 +14,15 @@ namespace WebApplication1.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IAppSqlServerRepository _repository;
         private readonly AppConfiguration _appConfiguration;
+        private readonly IStringLocalizer<HomeController> _localizer;
 
-        public HomeController(ILogger<HomeController> logger, IAppSqlServerRepository repository, AppConfiguration appConfiguration)
+        public HomeController(ILogger<HomeController> logger, IAppSqlServerRepository repository,
+            AppConfiguration appConfiguration, IStringLocalizer<HomeController> localizer)
         {
             _logger = logger;
             _repository = repository;
             _appConfiguration = appConfiguration;
+            _localizer = localizer;
         }
 
         [AllowAnonymous]
@@ -28,6 +32,7 @@ namespace WebApplication1.Controllers
             ViewBag.DefaultRole = _appConfiguration.AppSettings.UserSettings.DefaultRole;
             ViewBag.MaxLoginAttempts = _appConfiguration.AppSettings.UserSettings.MaxLoginAttempts;
             ViewBag.RequireEmailConfirmation = _appConfiguration.AppSettings.UserSettings.RequireEmailConfirmation;
+            ViewBag.TestText = _localizer["Test"];
 
             var apiKey = _appConfiguration.ApiSettings.ApiKey;
             _logger.LogInformation($"Current API key: {apiKey.Substring(0, Math.Min(10, apiKey.Length))}...");

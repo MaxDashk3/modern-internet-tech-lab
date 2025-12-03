@@ -45,7 +45,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddViewLocalization().AddDataAnnotationsLocalization();
 
 //  ÀÂÒÎÐÈÇÀÖ²ß
 builder.Services.AddAuthorization(options =>
@@ -75,9 +75,15 @@ builder.Services.AddScoped<IAuthorizationHandler, ResourceAuthorizationHandler>(
 builder.Services.AddScoped<IAuthorizationHandler, MinimumWorkingHoursHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ForumAccessHandler>();
 
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+var supportedCultures = new[] { "en-US", "uk-UA", "de-DE" };
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture("en-US").AddSupportedCultures(supportedCultures).AddSupportedUICultures(supportedCultures);
+});
 
 var app = builder.Build();
-
+app.UseRequestLocalization();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

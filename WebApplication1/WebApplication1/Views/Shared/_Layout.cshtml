@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -20,16 +23,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Localizer["Home"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Resource" asp-action="Index">Resource Archive</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Resource" asp-action="Index">@Localizer["Resource Archive"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="Index">Visit Forum</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="Index">@Localizer["Visit Forum"]</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
@@ -48,7 +51,10 @@
             <div class="row">
                 <div class="col-md-6">
                     &copy; 2025 - @(ViewBag.ApplicationName ?? "WebApplication1") - 
-                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a> - 
+                    <a asp-area="" asp-controller="SelectLanguage"
+                       asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString" 
+                       asp-action="Index">@Localizer["Change language"]</a>
                 </div>
                 <div class="col-md-6 text-end">
                     <small>
