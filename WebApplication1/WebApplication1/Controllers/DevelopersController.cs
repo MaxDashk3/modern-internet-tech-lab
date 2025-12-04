@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClassLibrary1.Data;
 using ClassLibrary1.DataModels;
+using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
@@ -28,17 +29,10 @@ namespace WebApplication1.Controllers
         // GET: Developers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var developer = await _context.Developers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (developer == null)
-            {
-                return NotFound();
-            }
+            var developer = await _context.Developers.FirstOrDefaultAsync(m => m.Id == id);
+            if (developer == null) return NotFound();
 
             return View(developer);
         }
@@ -50,51 +44,62 @@ namespace WebApplication1.Controllers
         }
 
         // POST: Developers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,ContactEmail,ConfirmEmail")] Developer developer)
+        public async Task<IActionResult> Create(DeveloperViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var developer = new Developer
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    ContactEmail = model.ContactEmail
+                };
+
                 _context.Add(developer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(developer);
+            return View(model);
         }
 
         // GET: Developers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var developer = await _context.Developers.FindAsync(id);
-            if (developer == null)
+            if (developer == null) return NotFound();
+
+            var model = new DeveloperViewModel
             {
-                return NotFound();
-            }
-            return View(developer);
+                Id = developer.Id,
+                Title = developer.Title,
+                Description = developer.Description,
+                ContactEmail = developer.ContactEmail,
+                ConfirmEmail = developer.ContactEmail
+            };
+
+            return View(model);
         }
 
         // POST: Developers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,ContactEmail,ConfirmEmail")] Developer developer)
+        public async Task<IActionResult> Edit(int id, DeveloperViewModel model)
         {
-            if (id != developer.Id)
-            {
-                return NotFound();
-            }
+            if (id != model.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
+                var developer = await _context.Developers.FindAsync(id);
+                if (developer == null) return NotFound();
+
+                developer.Title = model.Title;
+                developer.Description = model.Description;
+                developer.ContactEmail = model.ContactEmail;
+
                 try
                 {
                     _context.Update(developer);
@@ -102,7 +107,7 @@ namespace WebApplication1.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DeveloperExists(developer.Id))
+                    if (!_context.Developers.Any(e => e.Id == developer.Id))
                     {
                         return NotFound();
                     }
@@ -113,23 +118,16 @@ namespace WebApplication1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(developer);
+            return View(model);
         }
 
         // GET: Developers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var developer = await _context.Developers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (developer == null)
-            {
-                return NotFound();
-            }
+            var developer = await _context.Developers.FirstOrDefaultAsync(m => m.Id == id);
+            if (developer == null) return NotFound();
 
             return View(developer);
         }
@@ -144,33 +142,20 @@ namespace WebApplication1.Controllers
             {
                 _context.Developers.Remove(developer);
             }
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DeveloperExists(int id)
-        {
-            return _context.Developers.Any(e => e.Id == id);
-        }
-
+        // Remote validation endpoint used by DeveloperViewModel [Remote(...)]
         [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> IsEmailUnique(string ContactEmail, int? Id)
         {
-            if (string.IsNullOrWhiteSpace(ContactEmail))
-            {
-                return Json(true);
-            }
+            if (string.IsNullOrWhiteSpace(ContactEmail)) return Json(true);
 
             var exists = await _context.Developers
                 .AnyAsync(d => d.ContactEmail == ContactEmail && d.Id != (Id ?? 0));
 
-            if (exists)
-            {
-                return Json($"Email {ContactEmail} is already in use.");
-            }
-
-            return Json(true);
+            return exists ? Json($"Email {ContactEmail} is already in use.") : Json(true);
         }
     }
 }
