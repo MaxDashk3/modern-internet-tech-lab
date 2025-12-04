@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ClassLibrary1.DataModels.Developer>
+﻿@using ClassLibrary1.DataModels
+@model PaginatedList<Developer>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,13 +14,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                Description
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ContactEmail)
+                Contact email
             </th>
             <th></th>
         </tr>
@@ -45,3 +46,26 @@
 }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<div class="d-flex justify-content-center gap-2">
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       class="btn btn-outline-primary @prevDisabled">
+        &laquo;
+    </a>
+
+    <span class="align-self-center">
+        Сторінка @Model.PageIndex з @Model.TotalPages
+    </span>
+
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       class="btn btn-outline-primary @nextDisabled">
+        &raquo;
+    </a>
+</div>

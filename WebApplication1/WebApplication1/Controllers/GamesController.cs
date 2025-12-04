@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClassLibrary1.Data;
+using ClassLibrary1.DataModels;
+using ClassLibrary1.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ClassLibrary1.Data;
-using ClassLibrary1.DataModels;
+using System;
+using System.Collections.Generic;
+using System.Drawing.Printing;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -14,17 +16,20 @@ namespace WebApplication1.Controllers
     public class GamesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAppSqlServerRepository _repository;
 
-        public GamesController(ApplicationDbContext context)
+        public GamesController(ApplicationDbContext context, IAppSqlServerRepository repository)
         {
             _context = context;
+            _repository = repository;
         }
 
         // GET: Games
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber, int? pageSize)
         {
-            var applicationDbContext = _context.Games.Include(g => g.Developer);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.Games.Include(g => g.Developer);
+            var paginatedGames = await PaginatedList<Game>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 5);
+            return View(paginatedGames);
         }
 
         // GET: Games/Details/5

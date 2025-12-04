@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClassLibrary1.Data;
+using ClassLibrary1.DataModels;
+using ClassLibrary1.Interfaces;
+using ClassLibrary1.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ClassLibrary1.Data;
-using ClassLibrary1.DataModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -14,16 +16,20 @@ namespace WebApplication1.Controllers
     public class DevelopersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAppSqlServerRepository _repository;
 
-        public DevelopersController(ApplicationDbContext context)
+        public DevelopersController(ApplicationDbContext context, IAppSqlServerRepository repository)
         {
             _context = context;
+            _repository = repository;
         }
 
         // GET: Developers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber, int? pageSize)
         {
-            return View(await _context.Developers.ToListAsync());
+            var query = _repository.ReadAll<Developer>();
+            var paginatedDevs = await PaginatedList<Developer>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 5);
+            return View(paginatedDevs);
         }
 
         // GET: Developers/Details/5
