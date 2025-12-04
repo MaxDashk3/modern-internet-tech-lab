@@ -48,7 +48,7 @@ namespace WebApplication1.Controllers
         // GET: Games/Create
         public IActionResult Create()
         {
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "ContactEmail");
+            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title");
             return View();
         }
 
@@ -65,7 +65,7 @@ namespace WebApplication1.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "ContactEmail", game.DeveloperId);
+            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title", game.DeveloperId);
             return View(game);
         }
 
@@ -82,7 +82,7 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "ContactEmail", game.DeveloperId);
+            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title", game.DeveloperId);
             return View(game);
         }
 
@@ -118,7 +118,7 @@ namespace WebApplication1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "ContactEmail", game.DeveloperId);
+            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title", game.DeveloperId);
             return View(game);
         }
 

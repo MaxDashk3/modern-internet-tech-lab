@@ -135,4 +135,7 @@
   <data name="Developers" xml:space="preserve">
     <value>Entwickler</value>
   </data>
+  <data name="Games" xml:space="preserve">
+    <value>Spiele</value>
+  </data>
 </root>
