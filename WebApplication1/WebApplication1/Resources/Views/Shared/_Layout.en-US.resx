@@ -132,4 +132,7 @@
   <data name="Change language" xml:space="preserve">
     <value>Change language</value>
   </data>
+  <data name="Developers" xml:space="preserve">
+    <value>Developers</value>
+  </data>
 </root>

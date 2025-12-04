@@ -4,6 +4,7 @@ using ClassLibrary1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassLibrary1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251204162012_GamesDevelopersTags")]
+    partial class GamesDevelopersTags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace ClassLibrary1.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Developers", (string)null);
+                    b.ToTable("Developers");
                 });
 
             modelBuilder.Entity("ClassLibrary1.DataModels.Game", b =>
@@ -80,7 +83,7 @@ namespace ClassLibrary1.Migrations
 
                     b.HasIndex("DeveloperId");
 
-                    b.ToTable("Games", (string)null);
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("ClassLibrary1.DataModels.Resource", b =>
@@ -110,7 +113,7 @@ namespace ClassLibrary1.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Resources", (string)null);
+                    b.ToTable("Resources");
                 });
 
             modelBuilder.Entity("ClassLibrary1.DataModels.Tag", b =>
@@ -131,7 +134,7 @@ namespace ClassLibrary1.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("ClassLibrary1.DataModels.User", b =>
@@ -217,7 +220,7 @@ namespace ClassLibrary1.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("GameTag", (string)null);
+                    b.ToTable("GameTag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

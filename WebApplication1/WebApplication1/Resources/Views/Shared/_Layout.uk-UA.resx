@@ -132,4 +132,7 @@
   <data name="Change language" xml:space="preserve">
     <value>Змінити мову</value>
   </data>
+  <data name="Developers" xml:space="preserve">
+    <value>Розробники</value>
+  </data>
 </root>
