@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,6 +18,7 @@ namespace ClassLibrary1.DataModels
         public string Description { get; set; }
         [EmailAddress]
         [Required]
+        [Remote(action: "IsEmailUnique", controller: "Developers", HttpMethod = "POST", AdditionalFields = nameof(Id), ErrorMessage = "Email already in use")]
         public string ContactEmail { get; set; }
         [NotMapped]
         [Compare("ContactEmail")]

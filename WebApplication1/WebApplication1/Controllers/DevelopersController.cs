@@ -153,5 +153,24 @@ namespace WebApplication1.Controllers
         {
             return _context.Developers.Any(e => e.Id == id);
         }
+
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsEmailUnique(string ContactEmail, int? Id)
+        {
+            if (string.IsNullOrWhiteSpace(ContactEmail))
+            {
+                return Json(true);
+            }
+
+            var exists = await _context.Developers
+                .AnyAsync(d => d.ContactEmail == ContactEmail && d.Id != (Id ?? 0));
+
+            if (exists)
+            {
+                return Json($"Email {ContactEmail} is already in use.");
+            }
+
+            return Json(true);
+        }
     }
 }
