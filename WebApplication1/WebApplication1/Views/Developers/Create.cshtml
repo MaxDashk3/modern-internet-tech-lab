@@ -28,6 +28,11 @@
                 <span asp-validation-for="ContactEmail" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="ConfirmEmail" class="control-label"></label>
+                <input asp-for="ConfirmEmail" class="form-control" />
+                <span asp-validation-for="ConfirmEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -39,5 +44,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
