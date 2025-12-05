@@ -7,7 +7,6 @@ using WebApplication1.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using WebApplication1.Authorization;
-using WebApplication1.Controllers.UniPortal.Web.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
@@ -61,29 +60,14 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim("IsVerifiedClient", "True");
     });
 
-    options.AddPolicy("CanEditResource", policy =>
-        policy.AddRequirements(new IsResourceOwnerRequirement()));
 
     options.AddPolicy("CanEditDeveloper", policy =>
         policy.AddRequirements(new IsDeveloperOwnerRequirement()));
-
-    //  ��˲���� ��� "������" � WorkingHours >= 100
-    options.AddPolicy("PremiumOnly", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.AddRequirements(new MinimumWorkingHoursRequirement(100));
-    });
-
-    // Custom policy for Forum
-    options.AddPolicy("ForumAccessRequired", policy =>
-        policy.AddRequirements(new ForumAccessRequirement()));
 });
 
-// ��������� ��������
-builder.Services.AddScoped<IAuthorizationHandler, ResourceAuthorizationHandler>();
+
 builder.Services.AddScoped<IAuthorizationHandler, DeveloperAuthorizationHandler>();
-builder.Services.AddScoped<IAuthorizationHandler, MinimumWorkingHoursHandler>();
-builder.Services.AddScoped<IAuthorizationHandler, ForumAccessHandler>();
+
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 var supportedCultures = new[] { "en-US", "uk-UA", "de-DE" };

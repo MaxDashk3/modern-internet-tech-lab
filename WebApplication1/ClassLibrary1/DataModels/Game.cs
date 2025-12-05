@@ -18,7 +18,6 @@ namespace ClassLibrary1.DataModels
         public int Year { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
-        public ICollection<Tag> Tags { get; } = new List<Tag>();
         public int DeveloperId { get; set; }
         public Developer Developer { get; set; }
 

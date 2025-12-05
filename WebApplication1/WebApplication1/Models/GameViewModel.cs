@@ -31,9 +31,6 @@ namespace WebApplication1.Models
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
 
-        [Display(Name = "Tags")]
-        public ICollection<Tag> Tags { get; } = new List<Tag>();
-
         [Display(Name = "DeveloperId")]
         [Required(ErrorMessage = "The {0} field is required.")]
         public int DeveloperId { get; set; }

@@ -33,12 +33,6 @@ namespace WebApplication1.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.ApplicationName = _appConfiguration.AppSettings.ApplicationName;
-            ViewBag.DefaultRole = _appConfiguration.AppSettings.UserSettings.DefaultRole;
-            ViewBag.MaxLoginAttempts = _appConfiguration.AppSettings.UserSettings.MaxLoginAttempts;
-            ViewBag.RequireEmailConfirmation = _appConfiguration.AppSettings.UserSettings.RequireEmailConfirmation;
-            ViewBag.TestText = _localizer["Test"];
-
             var apiKey = _appConfiguration.ApiSettings.ApiKey;
             _logger.LogInformation($"Current API key: {apiKey.Substring(0, Math.Min(10, apiKey.Length))}...");
             return View();
