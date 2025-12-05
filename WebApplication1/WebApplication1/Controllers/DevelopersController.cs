@@ -35,7 +35,7 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var developer = await _context.Developers
+            var developer = await _repository.ReadAll<Developer>()
                 .Include(d => d.Games)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
