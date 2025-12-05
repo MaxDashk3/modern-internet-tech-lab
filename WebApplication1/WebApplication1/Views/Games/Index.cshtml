@@ -1,4 +1,5 @@
 ﻿@using ClassLibrary1.DataModels
+@using System.Security.Claims
 @model PaginatedList<Game>
 
 @{
@@ -8,13 +9,17 @@
 @{
     var cartIds = ViewBag.CartGameIds as List<int> ?? new List<int>();
     var ownedIds = ViewBag.OwnedGameIds as List<int> ?? new List<int>();
+    bool isVerified = User.HasClaim("IsVerifiedClient", "True");
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <h1 class="mb-4">Games</h1>
-
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
-</p>
+@if (isVerified)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New</a>
+    </p>
+}
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach (var item in Model)
@@ -40,11 +45,14 @@
                     </ul>
                 </div>
 
-                <div class="card-footer text-center">
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
-                        @if (ownedIds.Contains(item.Id))
+				<div class="card-footer text-center">
+					<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Details</a>
+                    @if (item.Developer.AuthorId == currentUserId)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    }
+                    @if (ownedIds.Contains(item.Id))
                         {
                             <button class="btn btn-sm btn-success" disabled>Owned</button>
                         }

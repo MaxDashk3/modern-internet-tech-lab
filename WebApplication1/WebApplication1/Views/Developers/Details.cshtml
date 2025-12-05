@@ -1,7 +1,9 @@
 ﻿@model ClassLibrary1.DataModels.Developer
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Details";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <h1 class="mb-4">@Model.Title</h1>
@@ -33,10 +35,11 @@
                 <a asp-action="Index" class="btn btn-outline-secondary">
                     ← Back to list
                 </a>
-
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
-                    Edit
-                </a>
+                @if (currentUserId == Model.AuthorId){
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                        Edit
+                    </a>
+                }
             </div>
         </div>
     </div>
@@ -84,18 +87,21 @@ else
                            class="btn btn-sm btn-secondary">
                             Details
                         </a>
-                        <a asp-controller="Games"
-                           asp-action="Edit"
-                           asp-route-id="@game.Id"
-                           class="btn btn-sm btn-primary">
-                            Edit
-                        </a>
-                        <a asp-controller="Games"
-                           asp-action="Delete"
-                           asp-route-id="@game.Id"
-                           class="btn btn-sm btn-danger">
-                            Delete
-                        </a>
+                        @if (currentUserId == Model.AuthorId)
+                        {
+                            <a asp-controller="Games"
+                            asp-action="Edit"
+                            asp-route-id="@game.Id"
+                            class="btn btn-sm btn-primary">
+                                Edit
+                            </a>
+                            <a asp-controller="Games"
+                            asp-action="Delete"
+                            asp-route-id="@game.Id"
+                            class="btn btn-sm btn-danger">
+                                Delete
+                            </a>
+                        }
                     </div>
                 </div>
             </div>

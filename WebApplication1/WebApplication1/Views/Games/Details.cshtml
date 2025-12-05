@@ -1,4 +1,5 @@
 ﻿@model ClassLibrary1.DataModels.Game
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Details";
@@ -7,6 +8,7 @@
 @{
     var isOwned = ViewBag.IsOwned;
     var isInCart = ViewBag.IsInCart;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <h1 class="mb-4">@Model.Title</h1>
@@ -70,9 +72,12 @@
                     ← Back to list
                 </a>
                 <div>
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
-                    Edit
-                </a>
+                    @if (currentUserId == Model.Developer.AuthorId)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                            Edit
+                        </a>
+                    }
                 @if (isOwned)
                 {
                     <button class="btn btn-success" disabled>Owned</button>
