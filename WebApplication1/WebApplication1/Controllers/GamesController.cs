@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication1.Helpers;
 using WebApplication1.Models;
@@ -36,8 +37,10 @@ namespace WebApplication1.Controllers
         {   // for disabling Add to Cart if in cart
             var sessionCart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
             var cartIds = sessionCart.Select(item => item.GameId).ToList();
-                
-            var query = _repository.All<Game>().Include(g => g.Developer);
+
+            // adding ordering to see the items you own first
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var query = _repository.All<Game>().Include(g => g.Developer).OrderByDescending(g => g.Developer.AuthorId == currentUserId);
             var paginatedGames = await PaginatedList<Game>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 6);
 
             // for disabling Add to Cart if in library

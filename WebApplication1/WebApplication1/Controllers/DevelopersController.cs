@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication1.Models;
 
@@ -28,7 +29,9 @@ namespace WebApplication1.Controllers
         // GET: Developers
         public async Task<IActionResult> Index(int? pageNumber, int? pageSize)
         {
-            var query = _repository.ReadAll<Developer>();
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            // adding ordering to see the items you own first
+            var query = _repository.ReadAll<Developer>().OrderByDescending(d => d.AuthorId == currentUserId);
             var paginatedDevs = await PaginatedList<Developer>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 6);
             return View(paginatedDevs);
         }
