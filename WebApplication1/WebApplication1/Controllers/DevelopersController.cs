@@ -98,7 +98,7 @@ namespace WebApplication1.Controllers
         {
             if (id != model.Id) return NotFound();
 
-            if (ModelState.IsValid && await IsEmailUniqueBool(model.ContactEmail, model.Id) == Json(true))
+            if (ModelState.IsValid && await IsEmailUniqueBool(model.ContactEmail, model.Id))
             {
                 var developer = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
                 if (developer == null) return NotFound();
