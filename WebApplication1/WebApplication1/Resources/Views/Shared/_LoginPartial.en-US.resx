@@ -129,4 +129,10 @@
   <data name="Greeting" xml:space="preserve">
     <value>Hello</value>
   </data>
+  <data name="Cart" xml:space="preserve">
+    <value>Cart</value>
+  </data>
+  <data name="Library" xml:space="preserve">
+    <value>Library</value>
+  </data>
 </root>

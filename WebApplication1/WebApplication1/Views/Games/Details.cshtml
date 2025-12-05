@@ -4,6 +4,11 @@
     ViewData["Title"] = "Details";
 }
 
+@{
+    var isOwned = ViewBag.IsOwned;
+    var isInCart = ViewBag.IsInCart;
+}
+
 <h1 class="mb-4">@Model.Title</h1>
 
 <div class="row">
@@ -64,10 +69,25 @@
                 <a asp-action="Index" class="btn btn-outline-secondary">
                     ← Back to list
                 </a>
-
+                <div>
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
                     Edit
                 </a>
+                @if (isOwned)
+                {
+                    <button class="btn btn-success" disabled>Owned</button>
+                }
+                else if (isInCart)
+                {
+                    <button class="btn btn-secondary" disabled>In Cart</button>
+                }
+                else
+                {
+                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-gameId="@Model.Id" class="btn btn-primary">
+                        Add to Cart
+                    </a>
+                }
+                </div>
             </div>
         </div>
     </div>

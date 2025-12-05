@@ -1,0 +1,49 @@
+﻿@model List<CartItem>
+
+<h2>Your Cart</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Game</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                         <img src="@item.ImageUrl" style="height: 50px; margin-right: 10px; object-fit:cover; width: 70px" />
+                        }
+                        @item.Title
+                    </td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>
+                        <a asp-action="Remove" asp-route-id="@item.GameId" class="text-danger">Remove</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right">
+                    <strong>Total: @Model.Sum(x => x.Price).ToString("C")</strong>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="text-right mt-3">
+        <a asp-action="Checkout" class="btn btn-success">Checkout</a>
+    </div>
+}
+else
+{
+    <p>Your cart is empty.</p>
+}

@@ -1,6 +1,8 @@
 ﻿using ClassLibrary1.Data;
 using ClassLibrary1.DataModels;
 using ClassLibrary1.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,26 +11,41 @@ using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication1.Helpers;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
     public class GamesController : Controller
     {
-        //private readonly ApplicationDbContext _context;
-        private readonly IAppSqlServerRepository _repository;
 
-        public GamesController(IAppSqlServerRepository repository)
+        private readonly IAppSqlServerRepository _repository;
+        private readonly UserManager<User> _userManager;
+
+        public GamesController(IAppSqlServerRepository repository, UserManager<User> userManager)
         {
-            //_context = context;
             _repository = repository;
+            _userManager = userManager;
         }
 
         // GET: Games
         public async Task<IActionResult> Index(int? pageNumber, int? pageSize)
-        {
+        {   // for disabling Add to Cart if in cart
+            var sessionCart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var cartIds = sessionCart.Select(item => item.GameId).ToList();
+                
             var query = _repository.All<Game>().Include(g => g.Developer);
-            var paginatedGames = await PaginatedList<Game>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 5);
+            var paginatedGames = await PaginatedList<Game>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 6);
+
+            // for disabling Add to Cart if in library
+            var userId = _userManager.GetUserId(User);
+            var ownedIds = await _repository.ReadWhere<User>(u => u.Id == userId)
+            .SelectMany(u => u.Games) 
+            .Select(g => g.Id)  
+            .ToListAsync();
+
+            ViewBag.OwnedGameIds = ownedIds;
+            ViewBag.CartGameIds = cartIds;
             return View(paginatedGames);
         }
 
@@ -41,6 +58,20 @@ namespace WebApplication1.Controllers
                 .Include(g => g.Developer)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (game == null) return NotFound();
+
+            // for disabling Add to Cart if in library
+            var userId = _userManager.GetUserId(User);
+            var owned = _repository.ReadWhere<User>(u => u.Id == userId)
+            .SelectMany(u => u.Games)
+            .FirstOrDefault(g => g.Id == id) != null ? true : false;
+           
+            // for disabling Add to Cart if in cart
+            var sessionCart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var inCart = sessionCart.FirstOrDefault( c => c.GameId == id) != null ? true : false;
+
+            ViewBag.IsOwned = owned;
+            ViewBag.IsInCart = inCart;
+
 
             return View(game);
         }

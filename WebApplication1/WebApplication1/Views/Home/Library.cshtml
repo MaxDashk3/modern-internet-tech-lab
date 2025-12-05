@@ -2,19 +2,10 @@
 @model PaginatedList<Game>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Library";
 }
 
-@{
-    var cartIds = ViewBag.CartGameIds as List<int> ?? new List<int>();
-    var ownedIds = ViewBag.OwnedGameIds as List<int> ?? new List<int>();
-}
-
-<h1 class="mb-4">Games</h1>
-
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
-</p>
+<h1 class="mb-4">My games</h1>
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach (var item in Model)
@@ -38,26 +29,9 @@
                         <li class="list-group-item"><strong>Price:</strong> @item.Price USD</li>
                         <li class="list-group-item"><strong>Developer:</strong> @item.Developer.Title</li>
                     </ul>
-                </div>
-
-                <div class="card-footer text-center">
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
-                        @if (ownedIds.Contains(item.Id))
-                        {
-                            <button class="btn btn-sm btn-success" disabled>Owned</button>
-                        }
-                        else if (cartIds.Contains(item.Id))
-                        {
-                            <button class="btn btn-sm btn-secondary" disabled>In Cart</button>
-                        }
-                        else
-                        {
-                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-gameId="@item.Id" class="btn btn-sm btn-primary">
-                                Add to Cart
-                            </a>
-                        }
+                    <div class="card-footer text-center">
+                        <a asp-action="Details" asp-controller="Games" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Details</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,7 +44,7 @@
 }
 
 <div class="d-flex justify-content-center gap-2 mt-4">
-    <a asp-action="Index"
+    <a asp-action="Library"
        asp-route-pageNumber="@(Model.PageIndex - 1)"
        class="btn btn-outline-primary @prevDisabled">
         &laquo;
@@ -80,7 +54,7 @@
         Сторінка @Model.PageIndex з @Model.TotalPages
     </span>
 
-    <a asp-action="Index"
+    <a asp-action="Library"
        asp-route-pageNumber="@(Model.PageIndex + 1)"
        class="btn btn-outline-primary @nextDisabled">
         &raquo;

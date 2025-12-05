@@ -1,11 +1,14 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Models;
+using ClassLibrary1.DataModels;
 using ClassLibrary1.Interfaces;
-using Microsoft.Extensions.Options;
-using WebApplication1.Configurations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using WebApplication1.Configurations;
+using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
@@ -15,14 +18,16 @@ namespace WebApplication1.Controllers
         private readonly IAppSqlServerRepository _repository;
         private readonly AppConfiguration _appConfiguration;
         private readonly IStringLocalizer<HomeController> _localizer;
+        private readonly UserManager<User> _userManager;
 
         public HomeController(ILogger<HomeController> logger, IAppSqlServerRepository repository,
-            AppConfiguration appConfiguration, IStringLocalizer<HomeController> localizer)
+            AppConfiguration appConfiguration, IStringLocalizer<HomeController> localizer, UserManager<User> userManager)
         {
             _logger = logger;
             _repository = repository;
             _appConfiguration = appConfiguration;
             _localizer = localizer;
+            _userManager = userManager;
         }
 
         [AllowAnonymous]
@@ -68,6 +73,20 @@ namespace WebApplication1.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public async Task<IActionResult> Library(int? pageNumber, int? pageSize)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var query = _repository.ReadWhere<User>(u => u.Id == userId)
+                .SelectMany(u => u.Games)
+                .Include(g => g.Developer)
+                .OrderBy(g => g.Title); 
+
+            var paginatedGames = await PaginatedList<Game>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 6);
+
+            return View(paginatedGames);
         }
     }
 }

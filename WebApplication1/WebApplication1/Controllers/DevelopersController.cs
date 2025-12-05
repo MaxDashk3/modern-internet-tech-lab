@@ -29,7 +29,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Index(int? pageNumber, int? pageSize)
         {
             var query = _repository.ReadAll<Developer>();
-            var paginatedDevs = await PaginatedList<Developer>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 5);
+            var paginatedDevs = await PaginatedList<Developer>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 6);
             return View(paginatedDevs);
         }
 

@@ -20,3 +20,7 @@ html {
 body {
   margin-bottom: 120px;
 }
+
+.form-group {
+    padding: 5px 0px;
+}

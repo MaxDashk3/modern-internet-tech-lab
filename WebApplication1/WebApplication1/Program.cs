@@ -32,7 +32,6 @@ AppConfiguration appConfiguration = builder.Configuration.Get<AppConfiguration>(
     ?? throw new InvalidOperationException("Failed to bind AppConfiguration.");
 builder.Services.AddSingleton(appConfiguration);
 
-
 //Add services to the container.
 var connectionString = appConfiguration.DefaultConnection ??
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -43,6 +42,13 @@ builder.Services.AddScoped<IAppSqlServerRepository, AppSqlServerRepository>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddDistributedMemoryCache(); 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); 
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews().AddViewLocalization().AddDataAnnotationsLocalization();
@@ -108,6 +114,7 @@ app.UseRouting();
 // �������������� �� ��� ����� ������������
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 app.UseRequestLimiter(authLimit: 100, anonLimit: 20, window: TimeSpan.FromMinutes(1));
 

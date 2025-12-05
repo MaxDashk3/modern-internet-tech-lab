@@ -124,9 +124,15 @@
     <value>Вийти</value>
   </data>
   <data name="Register" xml:space="preserve">
-    <value>зареєструватися</value>
+    <value>Зареєструватися</value>
   </data>
   <data name="Greeting" xml:space="preserve">
     <value>Привіт</value>
+  </data>
+  <data name="Cart" xml:space="preserve">
+    <value>Кошик</value>
+  </data>
+  <data name="Library" xml:space="preserve">
+    <value>Бібліотека</value>
   </data>
 </root>
