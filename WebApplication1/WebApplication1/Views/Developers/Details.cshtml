@@ -1,36 +1,102 @@
 ﻿@model ClassLibrary1.DataModels.Developer
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Developer Details";
 }
 
-<h1>Details</h1>
+<h1 class="mb-4">@Model.Title</h1>
 
-<div>
-    <h4>Developer</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ContactEmail)
-        </dd>
-    </dl>
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h4 class="card-title">Developer</h4>
+        <hr />
+        <dl class="row mb-0">
+            <dt class="col-sm-3">
+                Назва
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Title
+            </dd>
+
+            <dt class="col-sm-3">
+                Опис
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Description
+            </dd>
+
+            <dt class="col-sm-3">
+                Email
+            </dt>
+            <dd class="col-sm-9">
+                @Model.ContactEmail
+            </dd>
+        </dl>
+
+        <div class="mt-3">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<h3 class="mb-3">Games by this developer</h3>
+
+@if (Model.Games == null || !Model.Games.Any())
+{
+    <p class="text-muted">Цей розробник поки що не має ігор.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var game in Model.Games)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@game.ImageUrl"
+                         class="card-img-top"
+                         alt="@game.Title"
+                         style="height: 220px; object-fit: cover;" />
+
+                    <div class="card-body">
+                        <h5 class="card-title">@game.Title</h5>
+
+                        <p class="card-text text-muted" style="height: 60px; overflow: hidden;">
+                            @game.Description
+                        </p>
+
+                        <ul class="list-group list-group-flush small">
+                            <li class="list-group-item">
+                                <strong>Year:</strong> @game.Year
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Price:</strong> @game.Price
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-footer text-center">
+                        <a asp-controller="Games"
+                           asp-action="Details"
+                           asp-route-id="@game.Id"
+                           class="btn btn-sm btn-outline-secondary">
+                            Details
+                        </a>
+                        <a asp-controller="Games"
+                           asp-action="Edit"
+                           asp-route-id="@game.Id"
+                           class="btn btn-sm btn-primary">
+                            Edit
+                        </a>
+                        <a asp-controller="Games"
+                           asp-action="Delete"
+                           asp-route-id="@game.Id"
+                           class="btn btn-sm btn-danger">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
