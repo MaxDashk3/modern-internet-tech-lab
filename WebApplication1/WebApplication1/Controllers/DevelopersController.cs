@@ -52,7 +52,7 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DeveloperViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && await IsEmailUnique(model.ContactEmail, model.Id) == Json(true))
             {
                 var developer = new Developer
                 {
@@ -94,7 +94,7 @@ namespace WebApplication1.Controllers
         {
             if (id != model.Id) return NotFound();
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && await IsEmailUnique(model.ContactEmail, model.Id) == Json(true))
             {
                 var developer = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
                 if (developer == null) return NotFound();

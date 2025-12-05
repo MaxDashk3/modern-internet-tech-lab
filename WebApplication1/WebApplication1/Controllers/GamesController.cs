@@ -57,7 +57,7 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GameViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && await IsTitleUniqueForDeveloper(model.Title, model.DeveloperId, model.Id) == Json(true))
             {
                 var game = new Game
                 {
@@ -109,7 +109,7 @@ namespace WebApplication1.Controllers
         {
             if (id != model.Id) return NotFound();
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && await IsTitleUniqueForDeveloper(model.Title, model.DeveloperId, model.Id) == Json(true))
             {
                 var existing = await _repository.FirstOrDefaultAsync<Game>(g => g.Id == id);
                 if (existing == null) return NotFound();
