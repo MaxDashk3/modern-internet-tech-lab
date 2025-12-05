@@ -18,9 +18,26 @@ html {
 }
 
 body {
-  margin-bottom: 120px;
+  margin-bottom: 90px;
+  background-color: black !important;
+  font-family: 'Fira Code', monospace;
 }
 
 .form-group {
     padding: 5px 0px;
+}
+
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('/fonts/Press_Start_2P/PressStart2P-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fira Code';
+    src: url('/fonts/Fira_Code/FiraCode-VariableFont_wght.ttf') format('truetype');
+}
+
+h1, h2, h3, .title {
+    font-family: 'Press Start 2P';
+    letter-spacing: 2px;
 }

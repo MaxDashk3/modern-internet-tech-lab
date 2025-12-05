@@ -49,6 +49,7 @@ namespace WebApplication1.Controllers
 
 
         // GET: Developers/Create
+        [Authorize(Policy = "VerifiedClient")]
         public IActionResult Create()
         {
             return View();
@@ -57,6 +58,7 @@ namespace WebApplication1.Controllers
         // POST: Developers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Create(DeveloperViewModel model)
         {
             if (ModelState.IsValid && await IsEmailUniqueBool(model.ContactEmail, model.Id))
@@ -76,6 +78,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Developers/Edit/5
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -112,6 +115,7 @@ namespace WebApplication1.Controllers
         // POST: Developers/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Edit(int id, DeveloperViewModel model)
         {
             if (id != model.Id) return NotFound();
@@ -161,6 +165,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Developers/Delete/5
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -187,6 +192,7 @@ namespace WebApplication1.Controllers
 
         // POST: Developers/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Policy = "VerifiedClient")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

@@ -1,6 +1,7 @@
 ﻿using ClassLibrary1.Data;
 using ClassLibrary1.DataModels;
 using ClassLibrary1.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -77,6 +78,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Games/Create
+        [Authorize(Policy = "VerifiedClient")]
         public IActionResult Create()
         {
             ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title");
@@ -86,6 +88,7 @@ namespace WebApplication1.Controllers
         // POST: Games/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Create(GameViewModel model)
         {
             if (ModelState.IsValid && await IsTitleUniqueForDeveloperBool(model.Title, model.DeveloperId, model.Id))
@@ -109,6 +112,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Games/Edit/5
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -136,6 +140,7 @@ namespace WebApplication1.Controllers
         // POST: Games/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Edit(int id, GameViewModel model)
         {
             if (id != model.Id) return NotFound();
@@ -170,6 +175,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Games/Delete/5
+        [Authorize(Policy = "VerifiedClient")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -184,6 +190,7 @@ namespace WebApplication1.Controllers
 
         // POST: Games/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Policy = "VerifiedClient")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
