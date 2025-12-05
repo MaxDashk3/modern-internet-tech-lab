@@ -1,13 +1,41 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
+
 @{
     ViewData["Title"] = Localizer["Title"];
 }
 
-<div class="text-center">
-    <h1 class="display-4">@Localizer["Title"]</h1>
-    <p>@Localizer["Description"]</p>
-    @Localizer["Current date"]: @DateTime.Now.ToLongDateString()
-    <p>@(3000.ToString("C"))</p>
-    <p>@Localizer["Controller text"]: @ViewBag.TestText</p>
+<div class="text-center mt-4">
+
+    <h1 class="display-4 fw-bold text-primary">
+        🎮 @Localizer["Welcome to GameStore!"]
+    </h1>
+
+    <p class="lead mt-3 text-muted">
+        @Localizer["GameStore is a modern online shop where you can discover, explore and purchase the best video games from developers all over the world."]
+    </p>
+
+    <p class="mt-2">
+        <strong>@Localizer["Current date"]:</strong> @DateTime.Now.ToLongDateString()
+    </p>
+
+    <div class="mt-4">
+        <a asp-controller="Games" asp-action="Index" class="btn btn-lg btn-success px-4">
+            🚀 @Localizer["Browse Games"]
+        </a>
+        <a asp-controller="Developers" asp-action="Index" class="btn btn-lg btn-outline-primary px-4 ms-2">
+            🧑‍💻 @Localizer["Developers"]
+        </a>
+    </div>
+
+    <hr class="my-5" />
+
+    <p class="text-secondary">
+        @Localizer["Experience thousands of games, exclusive offers and rich content — welcome to the world of entertainment!"]
+    </p>
+
+    <p class="mt-3">
+        <em>@Localizer["Controller text"]:</em> @ViewBag.TestText
+    </p>
+
 </div>

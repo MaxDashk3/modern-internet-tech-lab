@@ -37,11 +37,15 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var developer = await _context.Developers.FirstOrDefaultAsync(m => m.Id == id);
+            var developer = await _context.Developers
+                .Include(d => d.Games)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (developer == null) return NotFound();
 
             return View(developer);
         }
+
 
         // GET: Developers/Create
         public IActionResult Create()
