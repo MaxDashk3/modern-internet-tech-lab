@@ -57,7 +57,7 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GameViewModel model)
         {
-            if (ModelState.IsValid && await IsTitleUniqueForDeveloper(model.Title, model.DeveloperId, model.Id) == Json(true))
+            if (ModelState.IsValid && await IsTitleUniqueForDeveloperBool(model.Title, model.DeveloperId, model.Id))
             {
                 var game = new Game
                 {
@@ -109,7 +109,7 @@ namespace WebApplication1.Controllers
         {
             if (id != model.Id) return NotFound();
 
-            if (ModelState.IsValid && await IsTitleUniqueForDeveloper(model.Title, model.DeveloperId, model.Id) == Json(true))
+            if (ModelState.IsValid && await IsTitleUniqueForDeveloperBool(model.Title, model.DeveloperId, model.Id))
             {
                 var existing = await _repository.FirstOrDefaultAsync<Game>(g => g.Id == id);
                 if (existing == null) return NotFound();
@@ -174,6 +174,17 @@ namespace WebApplication1.Controllers
             var exists = await _repository.ExistsAsync<Game>(g => g.Title == Title && g.DeveloperId == DeveloperId && g.Id != excludeId);
 
             return exists ? Json($"A game titled '{Title}' already exists for the selected developer.") : Json(true);
+        }
+
+        public async Task<bool> IsTitleUniqueForDeveloperBool(string Title, int DeveloperId, int? Id)
+        {
+            if (string.IsNullOrWhiteSpace(Title))
+                return true;
+
+            var excludeId = Id ?? 0;
+            var exists = await _repository.ExistsAsync<Game>(g => g.Title == Title && g.DeveloperId == DeveloperId && g.Id != excludeId);
+
+            return exists ? false: true;
         }
     }
 }

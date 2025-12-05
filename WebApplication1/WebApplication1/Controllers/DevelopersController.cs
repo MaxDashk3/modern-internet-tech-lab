@@ -56,7 +56,7 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DeveloperViewModel model)
         {
-            if (ModelState.IsValid && await IsEmailUnique(model.ContactEmail, model.Id) == Json(true))
+            if (ModelState.IsValid && await IsEmailUniqueBool(model.ContactEmail, model.Id))
             {
                 var developer = new Developer
                 {
@@ -98,7 +98,7 @@ namespace WebApplication1.Controllers
         {
             if (id != model.Id) return NotFound();
 
-            if (ModelState.IsValid && await IsEmailUnique(model.ContactEmail, model.Id) == Json(true))
+            if (ModelState.IsValid && await IsEmailUniqueBool(model.ContactEmail, model.Id) == Json(true))
             {
                 var developer = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
                 if (developer == null) return NotFound();
@@ -161,6 +161,16 @@ namespace WebApplication1.Controllers
                 .AnyAsync(d => d.ContactEmail == ContactEmail && d.Id != (Id ?? 0));
 
             return exists ? Json($"Email {ContactEmail} is already in use.") : Json(true);
+        }
+
+        public async Task<bool> IsEmailUniqueBool(string ContactEmail, int? Id)
+        {
+            if (string.IsNullOrWhiteSpace(ContactEmail)) return true;
+
+            var exists = await _repository.All<Developer>()
+                .AnyAsync(d => d.ContactEmail == ContactEmail && d.Id != (Id ?? 0));
+
+            return exists ? false : true;
         }
     }
 }
