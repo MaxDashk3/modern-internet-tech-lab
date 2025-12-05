@@ -21,5 +21,7 @@ namespace ClassLibrary1.DataModels
         public ICollection<Tag> Tags { get; } = new List<Tag>();
         public int DeveloperId { get; set; }
         public Developer Developer { get; set; }
+
+        public ICollection<User> Users { get;} = new List<User>();
     }
 }

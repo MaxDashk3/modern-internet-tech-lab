@@ -15,12 +15,10 @@ namespace WebApplication1.Controllers
 {
     public class DevelopersController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IAppSqlServerRepository _repository;
 
-        public DevelopersController(ApplicationDbContext context, IAppSqlServerRepository repository)
+        public DevelopersController(IAppSqlServerRepository repository)
         {
-            _context = context;
             _repository = repository;
         }
 
@@ -37,7 +35,7 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var developer = await _context.Developers.FirstOrDefaultAsync(m => m.Id == id);
+            var developer = await _repository.FirstOrDefaultAsync<Developer>(m => m.Id == id);
             if (developer == null) return NotFound();
 
             return View(developer);
@@ -63,8 +61,7 @@ namespace WebApplication1.Controllers
                     ContactEmail = model.ContactEmail
                 };
 
-                _context.Add(developer);
-                await _context.SaveChangesAsync();
+                await _repository.AddAsync(developer);
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
@@ -75,7 +72,7 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var developer = await _context.Developers.FindAsync(id);
+            var developer = await _repository.FirstOrDefaultAsync<Developer>( d => d.Id == id);
             if (developer == null) return NotFound();
 
             var model = new DeveloperViewModel
@@ -99,7 +96,7 @@ namespace WebApplication1.Controllers
 
             if (ModelState.IsValid)
             {
-                var developer = await _context.Developers.FindAsync(id);
+                var developer = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
                 if (developer == null) return NotFound();
 
                 developer.Title = model.Title;
@@ -108,12 +105,11 @@ namespace WebApplication1.Controllers
 
                 try
                 {
-                    _context.Update(developer);
-                    await _context.SaveChangesAsync();
+                    await _repository.UpdateAsync(developer);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Developers.Any(e => e.Id == developer.Id))
+                    if (!await _repository.ExistsAsync<Developer>(e => e.Id == developer.Id))
                     {
                         return NotFound();
                     }
@@ -132,7 +128,7 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var developer = await _context.Developers.FirstOrDefaultAsync(m => m.Id == id);
+            var developer = await _repository.FirstOrDefaultAsync<Developer>(m => m.Id == id);
             if (developer == null) return NotFound();
 
             return View(developer);
@@ -143,12 +139,11 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var developer = await _context.Developers.FindAsync(id);
+            var developer = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
             if (developer != null)
             {
-                _context.Developers.Remove(developer);
+                await _repository.RemoveAsync(developer);
             }
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -158,7 +153,7 @@ namespace WebApplication1.Controllers
         {
             if (string.IsNullOrWhiteSpace(ContactEmail)) return Json(true);
 
-            var exists = await _context.Developers
+            var exists = await _repository.All<Developer>()
                 .AnyAsync(d => d.ContactEmail == ContactEmail && d.Id != (Id ?? 0));
 
             return exists ? Json($"Email {ContactEmail} is already in use.") : Json(true);

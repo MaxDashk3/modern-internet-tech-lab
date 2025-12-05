@@ -33,6 +33,10 @@ namespace ClassLibrary1.Data
                 .WithOne(g => g.Developer)
                 .HasForeignKey(g => g.DeveloperId)
                 .IsRequired();
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Games)
+                .WithMany(g => g.Users);
         }
     }
 }

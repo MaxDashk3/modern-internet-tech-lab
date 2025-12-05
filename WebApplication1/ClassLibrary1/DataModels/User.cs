@@ -9,7 +9,6 @@ namespace ClassLibrary1.DataModels
 {
     public class User: IdentityUser
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
+        public ICollection<Game> Games { get; } = new List<Game>();
     }
 }

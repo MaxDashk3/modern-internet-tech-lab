@@ -16,6 +16,7 @@ namespace ClassLibrary1.DataModels
         public string Description { get; set; }
         public string ContactEmail { get; set; }
         public ICollection<Game> Games { get; } = new List<Game>();
+        public string AuthorId { get; set; } = string.Empty;
 
     }
 }

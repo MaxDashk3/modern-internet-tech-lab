@@ -15,19 +15,19 @@ namespace WebApplication1.Controllers
 {
     public class GamesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
         private readonly IAppSqlServerRepository _repository;
 
-        public GamesController(ApplicationDbContext context, IAppSqlServerRepository repository)
+        public GamesController(IAppSqlServerRepository repository)
         {
-            _context = context;
+            //_context = context;
             _repository = repository;
         }
 
         // GET: Games
         public async Task<IActionResult> Index(int? pageNumber, int? pageSize)
         {
-            var query = _context.Games.Include(g => g.Developer);
+            var query = _repository.All<Game>().Include(g => g.Developer);
             var paginatedGames = await PaginatedList<Game>.CreateAsync(query, pageNumber ?? 1, pageSize ?? 5);
             return View(paginatedGames);
         }
@@ -37,7 +37,7 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var game = await _context.Games
+            var game = await _repository.All<Game>()
                 .Include(g => g.Developer)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (game == null) return NotFound();
@@ -48,7 +48,7 @@ namespace WebApplication1.Controllers
         // GET: Games/Create
         public IActionResult Create()
         {
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title");
+            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title");
             return View(new GameViewModel { Year = DateTime.UtcNow.Year });
         }
 
@@ -69,12 +69,11 @@ namespace WebApplication1.Controllers
                     DeveloperId = model.DeveloperId
                 };
 
-                _context.Add(game);
-                await _context.SaveChangesAsync();
+                await _repository.AddAsync<Game>(game);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title", model.DeveloperId);
+            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title", model.DeveloperId);
             return View(model);
         }
 
@@ -83,7 +82,8 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var game = await _context.Games.Include(g => g.Developer).FirstOrDefaultAsync(g => g.Id == id);
+            var game = await _repository.All<Game>()
+                .Include(g => g.Developer).FirstOrDefaultAsync(g => g.Id == id);
             if (game == null) return NotFound();
 
             var model = new GameViewModel
@@ -98,7 +98,7 @@ namespace WebApplication1.Controllers
                 DeveloperTitle = game.Developer?.Title
             };
 
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title", model.DeveloperId);
+            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title", model.DeveloperId);
             return View(model);
         }
 
@@ -111,7 +111,7 @@ namespace WebApplication1.Controllers
 
             if (ModelState.IsValid)
             {
-                var existing = await _context.Games.FindAsync(id);
+                var existing = await _repository.FirstOrDefaultAsync<Game>(g => g.Id == id);
                 if (existing == null) return NotFound();
 
                 existing.Title = model.Title;
@@ -123,19 +123,18 @@ namespace WebApplication1.Controllers
 
                 try
                 {
-                    _context.Update(existing);
-                    await _context.SaveChangesAsync();
+                    await _repository.UpdateAsync(existing);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Games.Any(e => e.Id == existing.Id)) return NotFound();
+                    if (!await _repository.ExistsAsync<Game>(e => e.Id == existing.Id)) return NotFound();
                     throw;
                 }
 
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["DeveloperId"] = new SelectList(_context.Developers, "Id", "Title", model.DeveloperId);
+            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title", model.DeveloperId);
             return View(model);
         }
 
@@ -144,7 +143,7 @@ namespace WebApplication1.Controllers
         {
             if (id == null) return NotFound();
 
-            var game = await _context.Games
+            var game = await _repository.All<Game>()
                 .Include(g => g.Developer)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (game == null) return NotFound();
@@ -157,13 +156,11 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var game = await _context.Games.FindAsync(id);
+            var game = await _repository.FirstOrDefaultAsync<Game>(g => g.Id == id);
             if (game != null)
             {
-                _context.Games.Remove(game);
+                await _repository.RemoveAsync(game);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -174,8 +171,7 @@ namespace WebApplication1.Controllers
                 return Json(true);
 
             var excludeId = Id ?? 0;
-            var exists = await _context.Games
-                .AnyAsync(g => g.Title == Title && g.DeveloperId == DeveloperId && g.Id != excludeId);
+            var exists = await _repository.ExistsAsync<Game>(g => g.Title == Title && g.DeveloperId == DeveloperId && g.Id != excludeId);
 
             return exists ? Json($"A game titled '{Title}' already exists for the selected developer.") : Json(true);
         }
