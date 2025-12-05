@@ -4,55 +4,51 @@
 @{
     ViewData["Title"] = "Index";
 }
+<style>
+.list-group-item{
+    padding: 0px 0px;
+}
 
-<h1>Index</h1>
+</style>
+<h1 class="mb-4">Developers</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Title
-            </th>
-            <th>
-                Description
-            </th>
-            <th>
-                Contact email
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactEmail)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Title</h5>
+
+                    <p class="card-text" style="height: 60px; overflow: hidden;">
+                        @item.Description
+                    </p>
+
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item"><strong>Email:</strong> @item.ContactEmail</li>
+                    </ul>
+                </div>
+
+                <div class="card-footer text-center">
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
 @{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
-<div class="d-flex justify-content-center gap-2">
+
+<div class="d-flex justify-content-center gap-2 mt-4">
     <a asp-action="Index"
        asp-route-pageNumber="@(Model.PageIndex - 1)"
        class="btn btn-outline-primary @prevDisabled">
