@@ -22,11 +22,13 @@ namespace WebApplication1.Controllers
 
         private readonly IAppSqlServerRepository _repository;
         private readonly UserManager<User> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
-        public GamesController(IAppSqlServerRepository repository, UserManager<User> userManager)
+        public GamesController(IAppSqlServerRepository repository, UserManager<User> userManager, IAuthorizationService authorizationService)
         {
             _repository = repository;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         // GET: Games
@@ -81,7 +83,8 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "VerifiedClient")]
         public IActionResult Create()
         {
-            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title");
+            var userId = _userManager.GetUserId(User);
+            ViewData["DeveloperId"] = new SelectList(_repository.ReadWhere<Developer>(d => d.AuthorId == userId), "Id", "Title");
             return View(new GameViewModel { Year = DateTime.UtcNow.Year });
         }
 
@@ -106,8 +109,8 @@ namespace WebApplication1.Controllers
                 await _repository.AddAsync<Game>(game);
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title", model.DeveloperId);
+            var userId = _userManager.GetUserId(User);
+            ViewData["DeveloperId"] = new SelectList(_repository.ReadWhere<Developer>(d => d.AuthorId == userId), "Id", "Title");
             return View(model);
         }
 
@@ -132,8 +135,8 @@ namespace WebApplication1.Controllers
                 DeveloperId = game.DeveloperId,
                 DeveloperTitle = game.Developer?.Title
             };
-
-            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title", model.DeveloperId);
+            var userId = _userManager.GetUserId(User);
+            ViewData["DeveloperId"] = new SelectList(_repository.ReadWhere<Developer>(d => d.AuthorId == userId), "Id", "Title");
             return View(model);
         }
 
@@ -169,8 +172,8 @@ namespace WebApplication1.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewData["DeveloperId"] = new SelectList(_repository.All<Developer>(), "Id", "Title", model.DeveloperId);
+            var userId = _userManager.GetUserId(User);
+            ViewData["DeveloperId"] = new SelectList(_repository.ReadWhere<Developer>(d => d.AuthorId == userId), "Id", "Title");
             return View(model);
         }
 
@@ -183,9 +186,22 @@ namespace WebApplication1.Controllers
             var game = await _repository.All<Game>()
                 .Include(g => g.Developer)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (game == null) return NotFound();
 
-            return View(game);
+            if (game == null) return NotFound();
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, game.Developer, "CanEditDeveloper");
+            if (authorizationResult.Succeeded)
+            {
+                return View(game);
+            }
+            else if (User.Identity?.IsAuthenticated == true)
+            {
+                return new ForbidResult();
+            }
+            else
+            {
+                return new ChallengeResult();
+            }
         }
 
         // POST: Games/Delete/5
