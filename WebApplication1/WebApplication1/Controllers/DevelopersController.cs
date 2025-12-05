@@ -2,6 +2,7 @@
 using ClassLibrary1.DataModels;
 using ClassLibrary1.Interfaces;
 using ClassLibrary1.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +17,12 @@ namespace WebApplication1.Controllers
     public class DevelopersController : Controller
     {
         private readonly IAppSqlServerRepository _repository;
+        private readonly IAuthorizationService _authorizationService;
 
-        public DevelopersController(IAppSqlServerRepository repository)
+        public DevelopersController(IAppSqlServerRepository repository, IAuthorizationService authorizationService)
         {
             _repository = repository;
+            _authorizationService = authorizationService;
         }
 
         // GET: Developers
@@ -62,7 +65,8 @@ namespace WebApplication1.Controllers
                 {
                     Title = model.Title,
                     Description = model.Description,
-                    ContactEmail = model.ContactEmail
+                    ContactEmail = model.ContactEmail,
+                    AuthorId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty
                 };
 
                 await _repository.AddAsync(developer);
@@ -79,16 +83,30 @@ namespace WebApplication1.Controllers
             var developer = await _repository.FirstOrDefaultAsync<Developer>( d => d.Id == id);
             if (developer == null) return NotFound();
 
-            var model = new DeveloperViewModel
-            {
-                Id = developer.Id,
-                Title = developer.Title,
-                Description = developer.Description,
-                ContactEmail = developer.ContactEmail,
-                ConfirmEmail = developer.ContactEmail
-            };
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, developer, "CanEditDeveloper");
 
-            return View(model);
+            if (authorizationResult.Succeeded)
+            {
+                var model = new DeveloperViewModel
+                {
+                    Id = developer.Id,
+                    Title = developer.Title,
+                    Description = developer.Description,
+                    ContactEmail = developer.ContactEmail,
+                    ConfirmEmail = developer.ContactEmail
+                };
+
+                return View(model);
+            }
+            else if (User.Identity?.IsAuthenticated == true)
+            {
+                return new ForbidResult();
+            }
+            else
+            {
+                return new ChallengeResult();
+            }
         }
 
         // POST: Developers/Edit/5
@@ -98,22 +116,37 @@ namespace WebApplication1.Controllers
         {
             if (id != model.Id) return NotFound();
 
+            var existingDeveloper = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
+            if (existingDeveloper == null) return NotFound();
+
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, existingDeveloper, "CanEditDeveloper");
+
+            if (!authorizationResult.Succeeded)
+            {
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    return new ForbidResult();
+                }
+                else
+                {
+                    return new ChallengeResult();
+                }
+            }
+
             if (ModelState.IsValid && await IsEmailUniqueBool(model.ContactEmail, model.Id))
             {
-                var developer = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
-                if (developer == null) return NotFound();
-
-                developer.Title = model.Title;
-                developer.Description = model.Description;
-                developer.ContactEmail = model.ContactEmail;
+                existingDeveloper.Title = model.Title;
+                existingDeveloper.Description = model.Description;
+                existingDeveloper.ContactEmail = model.ContactEmail;
 
                 try
                 {
-                    await _repository.UpdateAsync(developer);
+                    await _repository.UpdateAsync(existingDeveloper);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _repository.ExistsAsync<Developer>(e => e.Id == developer.Id))
+                    if (!await _repository.ExistsAsync<Developer>(e => e.Id == existingDeveloper.Id))
                     {
                         return NotFound();
                     }
@@ -135,7 +168,21 @@ namespace WebApplication1.Controllers
             var developer = await _repository.FirstOrDefaultAsync<Developer>(m => m.Id == id);
             if (developer == null) return NotFound();
 
-            return View(developer);
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, developer, "CanEditDeveloper");
+
+            if (authorizationResult.Succeeded)
+            {
+                return View(developer);
+            }
+            else if (User.Identity?.IsAuthenticated == true)
+            {
+                return new ForbidResult();
+            }
+            else
+            {
+                return new ChallengeResult();
+            }
         }
 
         // POST: Developers/Delete/5
@@ -144,10 +191,24 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var developer = await _repository.FirstOrDefaultAsync<Developer>(d => d.Id == id);
-            if (developer != null)
+            if (developer == null) return NotFound();
+
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, developer, "CanEditDeveloper");
+
+            if (!authorizationResult.Succeeded)
             {
-                await _repository.RemoveAsync(developer);
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    return new ForbidResult();
+                }
+                else
+                {
+                    return new ChallengeResult();
+                }
             }
+
+            await _repository.RemoveAsync(developer);
             return RedirectToAction(nameof(Index));
         }
 

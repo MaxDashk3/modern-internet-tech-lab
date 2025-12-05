@@ -47,7 +47,7 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews().AddViewLocalization().AddDataAnnotationsLocalization();
 
-//  АВТОРИЗАЦІЯ
+//  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЦІпїЅ
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("VerifiedClient", policy =>
@@ -58,7 +58,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CanEditResource", policy =>
         policy.AddRequirements(new IsResourceOwnerRequirement()));
 
-    //  ПОЛІТИКА ДЛЯ "Преміум" – WorkingHours >= 100
+    options.AddPolicy("CanEditDeveloper", policy =>
+        policy.AddRequirements(new IsDeveloperOwnerRequirement()));
+
+    //  пїЅпїЅЛІпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅ" пїЅ WorkingHours >= 100
     options.AddPolicy("PremiumOnly", policy =>
     {
         policy.RequireAuthenticatedUser();
@@ -70,8 +73,9 @@ builder.Services.AddAuthorization(options =>
         policy.AddRequirements(new ForumAccessRequirement()));
 });
 
-// реєстрація хендлерів
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 builder.Services.AddScoped<IAuthorizationHandler, ResourceAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, DeveloperAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, MinimumWorkingHoursHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ForumAccessHandler>();
 
@@ -101,7 +105,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// автентифікація має йти перед авторизацією
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -112,7 +116,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-// тут ми змушуємо усі контролери вимагати авторизацію;
+// пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ;
 app.MapControllers().RequireAuthorization();
 
 app.Run();
