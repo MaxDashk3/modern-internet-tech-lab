@@ -89,5 +89,9 @@ namespace ClassLibrary1.Repositories
             Db.Update(item);
             return await Db.SaveChangesAsync();
         }
+        public async Task<int> SaveAsync()
+        {
+            return await Db.SaveChangesAsync();
+        }
     }
 }

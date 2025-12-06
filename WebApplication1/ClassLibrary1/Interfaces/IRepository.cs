@@ -28,6 +28,7 @@ namespace ClassLibrary1.Interfaces
         Task<int> UpdateAsync<T>(T entity) where T : class;
 
         Task<int> RemoveAsync<T>(T entity) where T : class;
+        Task<int> SaveAsync();
 
 
     }

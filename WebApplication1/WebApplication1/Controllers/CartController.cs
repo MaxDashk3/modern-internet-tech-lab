@@ -104,7 +104,7 @@ namespace WebApplication1.Controllers
             }
             if (isModified)
             {
-                await _repository.UpdateAsync(user);
+                await _repository.SaveAsync();
             }
             HttpContext.Session.Remove("Cart");
             return View();
