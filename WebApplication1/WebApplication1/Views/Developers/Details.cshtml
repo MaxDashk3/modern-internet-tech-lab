@@ -1,9 +1,13 @@
 ﻿@model ClassLibrary1.DataModels.Developer
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Localizer["Details"];
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var cartIds = ViewBag.CartGameIds as List<int> ?? new List<int>();
+    var ownedIds = ViewBag.OwnedGameIds as List<int> ?? new List<int>();
 }
 
 <h1 class="mb-4">@Model.Title</h1>
@@ -23,7 +27,7 @@
 
                 <dl class="row mb-0">
                     <dt class="col-sm-3">
-                        Email
+                        @Localizer["Email"]
                     </dt>
                     <dd class="col-sm-9">
                         @Html.DisplayFor(m => m.ContactEmail)
@@ -33,11 +37,11 @@
 
             <div class="card-footer d-flex justify-content-between">
                 <a asp-action="Index" class="btn btn-outline-secondary">
-                    ← Back to list
+                    ← @Localizer["Back to list"]
                 </a>
                 @if (currentUserId == Model.AuthorId){
                     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
-                        Edit
+                        @Localizer["Edit"]
                     </a>
                 }
             </div>
@@ -45,11 +49,11 @@
     </div>
 </div>
 
-<h3 class="mb-3 mt-4">Games by this developer</h3>
+<h3 class="mb-3 mt-4">@Localizer["Games by this developer"]</h3>
 
 @if (Model.Games == null || !Model.Games.Any())
 {
-    <p class="text-muted">Цей розробник поки що не має ігор.</p>
+    <p class="text-muted">@Localizer["The developer doesn't have any games at the moment"].</p>
 }
 else
 {
@@ -72,10 +76,10 @@ else
 
                         <ul class="list-group list-group-flush small">
                             <li class="list-group-item">
-                                <strong>Year:</strong> @game.Year
+                                <strong>@Localizer["Year"]:</strong> @game.Year
                             </li>
                             <li class="list-group-item">
-                                <strong>Price:</strong> @game.Price USD
+                                <strong>@Localizer["Price"]:</strong> @game.Price USD
                             </li>
                         </ul>
                     </div>
@@ -85,7 +89,7 @@ else
                            asp-action="Details"
                            asp-route-id="@game.Id"
                            class="btn btn-sm btn-secondary">
-                            Details
+                            @Localizer["Details"]
                         </a>
                         @if (currentUserId == Model.AuthorId)
                         {
@@ -93,13 +97,27 @@ else
                             asp-action="Edit"
                             asp-route-id="@game.Id"
                             class="btn btn-sm btn-primary">
-                                Edit
+                                @Localizer["Edit"]
                             </a>
                             <a asp-controller="Games"
                             asp-action="Delete"
                             asp-route-id="@game.Id"
                             class="btn btn-sm btn-danger">
-                                Delete
+                                @Localizer["Delete"]
+                            </a>
+                        }
+                        @if (ownedIds.Contains(game.Id))
+                        {
+                            <button class="btn btn-sm btn-success" disabled>@Localizer["Owned"]</button>
+                        }
+                        else if (cartIds.Contains(game.Id))
+                        {
+                            <button class="btn btn-sm btn-secondary" disabled>@Localizer["In Cart"]</button>
+                        }
+                        else
+                        {
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-gameId="@game.Id" class="btn btn-sm btn-primary">
+                                @Localizer["Add to Cart"]
                             </a>
                         }
                     </div>

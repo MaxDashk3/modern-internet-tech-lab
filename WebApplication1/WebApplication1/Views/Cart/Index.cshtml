@@ -1,15 +1,21 @@
 ﻿@model List<CartItem>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = @Localizer["Your Cart"];
+}
 
-<h2>Your Cart</h2>
+
+<h2>@Localizer["Your Cart"]</h2>
 
 @if (Model.Any())
 {
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Game</th>
-                <th>Price</th>
-                <th>Action</th>
+                <th>@Localizer["Game"]</th>
+                <th>@Localizer["Price"]</th>
+                <th>@Localizer["Action"]</th>
             </tr>
         </thead>
         <tbody>
@@ -25,7 +31,7 @@
                     </td>
                     <td>@item.Price.ToString("C")</td>
                     <td>
-                        <a asp-action="Remove" asp-route-id="@item.GameId" class="text-danger">Remove</a>
+                        <a asp-action="Remove" asp-route-id="@item.GameId" class="text-danger">@Localizer["Remove"]</a>
                     </td>
                 </tr>
             }
@@ -33,17 +39,17 @@
         <tfoot>
             <tr>
                 <td colspan="3" class="text-right">
-                    <strong>Total: @Model.Sum(x => x.Price).ToString("C")</strong>
+                    <strong>@Localizer["Total"]: @Model.Sum(x => x.Price).ToString("C")</strong>
                 </td>
             </tr>
         </tfoot>
     </table>
 
     <div class="text-right mt-3">
-        <a asp-action="Checkout" class="btn btn-success">Checkout</a>
+        <a asp-action="Checkout" class="btn btn-success">@Localizer["Checkout"]</a>
     </div>
 }
 else
 {
-    <p>Your cart is empty.</p>
+    <p>@Localizer["Your cart is empty."]</p>
 }

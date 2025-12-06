@@ -3,6 +3,8 @@ using ClassLibrary1.DataModels;
 using ClassLibrary1.Interfaces;
 using ClassLibrary1.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using WebApplication1.Helpers;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -19,11 +22,12 @@ namespace WebApplication1.Controllers
     {
         private readonly IAppSqlServerRepository _repository;
         private readonly IAuthorizationService _authorizationService;
-
-        public DevelopersController(IAppSqlServerRepository repository, IAuthorizationService authorizationService)
+        private readonly UserManager<User> _userManager;
+        public DevelopersController(IAppSqlServerRepository repository, IAuthorizationService authorizationService, UserManager<User> userManager)
         {
             _repository = repository;
             _authorizationService = authorizationService;
+            _userManager = userManager;
         }
 
         // GET: Developers
@@ -46,6 +50,19 @@ namespace WebApplication1.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (developer == null) return NotFound();
+
+            var sessionCart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var cartIds = sessionCart.Select(item => item.GameId).ToList();
+
+            // for disabling Add to Cart if in library
+            var userId = _userManager.GetUserId(User);
+            var ownedIds = await _repository.ReadWhere<User>(u => u.Id == userId)
+                .SelectMany(u => u.Games)
+                .Select(g => g.Id)
+                .ToListAsync();
+
+            ViewBag.OwnedGameIds = ownedIds;
+            ViewBag.CartGameIds = cartIds;
 
             return View(developer);
         }

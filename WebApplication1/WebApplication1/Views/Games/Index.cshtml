@@ -1,9 +1,11 @@
 ﻿@using ClassLibrary1.DataModels
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model PaginatedList<Game>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = Localizer["Games"];
 }
 
 @{
@@ -13,11 +15,11 @@
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-<h1 class="mb-4">Games</h1>
+<h1 class="mb-4">@Localizer["Games"]</h1>
 @if (isVerified)
 {
     <p>
-        <a asp-action="Create" class="btn btn-success">Create New</a>
+        <a asp-action="Create" class="btn btn-success">@Localizer["Create New"]</a>
     </p>
 }
 
@@ -39,31 +41,31 @@
                     </p>
 
                     <ul class="list-group list-group-flush small">
-                        <li class="list-group-item"><strong>Year:</strong> @item.Year</li>
-                        <li class="list-group-item"><strong>Price:</strong> @item.Price USD</li>
-                        <li class="list-group-item"><strong>Developer:</strong> @item.Developer.Title</li>
+                        <li class="list-group-item"><strong>@Localizer["Year"]:</strong> @item.Year</li>
+                        <li class="list-group-item"><strong>@Localizer["Price"]:</strong> @item.Price USD</li>
+                        <li class="list-group-item"><strong>@Localizer["Developer"]:</strong> @item.Developer.Title</li>
                     </ul>
                 </div>
 
 				<div class="card-footer text-center">
-					<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Details</a>
+					<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">@Localizer["Details"]</a>
                     @if (item.Developer.AuthorId == currentUserId)
                     {
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">@Localizer["Edit"]</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">@Localizer["Delete"]</a>
                     }
                     @if (ownedIds.Contains(item.Id))
                         {
-                            <button class="btn btn-sm btn-success" disabled>Owned</button>
+                            <button class="btn btn-sm btn-success" disabled>@Localizer["Owned"]</button>
                         }
                         else if (cartIds.Contains(item.Id))
                         {
-                            <button class="btn btn-sm btn-secondary" disabled>In Cart</button>
+                            <button class="btn btn-sm btn-secondary" disabled>@Localizer["In Cart"]</button>
                         }
                         else
                         {
                             <a asp-controller="Cart" asp-action="AddToCart" asp-route-gameId="@item.Id" class="btn btn-sm btn-primary">
-                                Add to Cart
+                                @Localizer["Add to Cart"]
                             </a>
                         }
                 </div>
@@ -85,7 +87,7 @@
     </a>
 
     <span class="align-self-center">
-        Сторінка @Model.PageIndex з @Model.TotalPages
+        @Localizer["Page"] @Model.PageIndex @Localizer["out of"] @Model.TotalPages
     </span>
 
     <a asp-action="Index"

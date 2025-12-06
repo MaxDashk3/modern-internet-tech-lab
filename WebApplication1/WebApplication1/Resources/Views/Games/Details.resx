@@ -117,25 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Title" xml:space="preserve">
-    <value>Welcome!</value>
+  <data name="Add to Cart" xml:space="preserve">
+    <value>Add to Cart</value>
   </data>
-  <data name="Current date" xml:space="preserve">
-    <value>Current date</value>
+  <data name="Back to list" xml:space="preserve">
+    <value>Back to list</value>
   </data>
-  <data name="Browse Games" xml:space="preserve">
-    <value>Browse Games</value>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
   </data>
-  <data name="Developers" xml:space="preserve">
-    <value>Developers</value>
+  <data name="Developer" xml:space="preserve">
+    <value>Developer</value>
   </data>
-  <data name="Experience thousands of games, exclusive offers and rich content — welcome to the world of entertainment!" xml:space="preserve">
-    <value>Experience thousands of games, exclusive offers and rich content — welcome to the world of entertainment!</value>
+  <data name="Developer's email" xml:space="preserve">
+    <value>Developer's email</value>
   </data>
-  <data name="Welcome to GameStore!" xml:space="preserve">
-    <value>Welcome to GameStore!</value>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
   </data>
-  <data name="GameStore is a modern online shop where you can discover, explore and purchase the best video games from developers all over the world." xml:space="preserve">
-    <value>GameStore is a modern online shop where you can discover, explore and purchase the best video games from developers all over the world.</value>
+  <data name="In Cart" xml:space="preserve">
+    <value>In Cart</value>
+  </data>
+  <data name="Owned" xml:space="preserve">
+    <value>Owned</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Release year" xml:space="preserve">
+    <value>Release year</value>
   </data>
 </root>

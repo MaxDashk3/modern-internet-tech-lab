@@ -120,13 +120,22 @@
   <data name="Title" xml:space="preserve">
     <value>Ласкаво просимо!</value>
   </data>
-  <data name="Description" xml:space="preserve">
-    <value>Це тестовий текст локалізації</value>
-  </data>
   <data name="Current date" xml:space="preserve">
     <value>Поточна дата</value>
   </data>
-  <data name="Controller text" xml:space="preserve">
-    <value>Текст від контролера</value>
+  <data name="Browse Games" xml:space="preserve">
+    <value>Огляд ігор</value>
+  </data>
+  <data name="Developers" xml:space="preserve">
+    <value>Розробники</value>
+  </data>
+  <data name="Experience thousands of games, exclusive offers and rich content — welcome to the world of entertainment!" xml:space="preserve">
+    <value>Грайте у тисячі ігор, отримуйте ексклюзивні пропозиції та багатий контент — ласкаво просимо у світ розваг!</value>
+  </data>
+  <data name="Welcome to GameStore!" xml:space="preserve">
+    <value>Ласкаво просимо до GameStore!</value>
+  </data>
+  <data name="GameStore is a modern online shop where you can discover, explore and purchase the best video games from developers all over the world." xml:space="preserve">
+    <value>GameStore — це сучасний онлайн-магазин, де ви можете знайти, дослідити та придбати найкращі відеоігри від розробників з усього світу.</value>
   </data>
 </root>

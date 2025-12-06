@@ -1,8 +1,9 @@
 ﻿@model ClassLibrary1.DataModels.Game
 @using System.Security.Claims
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Localizer["Details"];
 }
 
 @{
@@ -38,28 +39,28 @@
 
                 <dl class="row mb-0">
                     <dt class="col-sm-3">
-                        Рік виходу
+                        @Localizer["Release year"]
                     </dt>
                     <dd class="col-sm-9">
                         @Html.DisplayFor(m => m.Year)
                     </dd>
 
                     <dt class="col-sm-3">
-                        Ціна
+                        @Localizer["Price"]
                     </dt>
                     <dd class="col-sm-9">
                         @Html.DisplayFor(m => m.Price)
                     </dd>
 
                     <dt class="col-sm-3">
-                        Розробник
+                        @Localizer["Developer"]
                     </dt>
                     <dd class="col-sm-9">
                         @Html.DisplayFor(m => m.Developer.Title)
                     </dd>
 
                     <dt class="col-sm-3">
-                        Email розробника
+                        @Localizer["Developer's email"]
                     </dt>
                     <dd class="col-sm-9">
                         @Html.DisplayFor(m => m.Developer.ContactEmail)
@@ -69,27 +70,27 @@
 
             <div class="card-footer d-flex justify-content-between">
                 <a asp-action="Index" class="btn btn-outline-secondary">
-                    ← Back to list
+                    ← @Localizer["Back to list"]
                 </a>
                 <div>
                     @if (currentUserId == Model.Developer.AuthorId)
                     {
                         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
-                            Edit
+                            @Localizer["Edit"]
                         </a>
                     }
                 @if (isOwned)
                 {
-                    <button class="btn btn-success" disabled>Owned</button>
+                    <button class="btn btn-success" disabled>@Localizer["Owned"]</button>
                 }
                 else if (isInCart)
                 {
-                    <button class="btn btn-secondary" disabled>In Cart</button>
+                    <button class="btn btn-secondary" disabled>@Localizer["In Cart"]</button>
                 }
                 else
                 {
                     <a asp-controller="Cart" asp-action="AddToCart" asp-route-gameId="@Model.Id" class="btn btn-primary">
-                        Add to Cart
+                        @Localizer["Add to Cart"]
                     </a>
                 }
                 </div>

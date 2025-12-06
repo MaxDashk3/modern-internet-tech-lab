@@ -1,12 +1,13 @@
 ﻿@model WebApplication1.Models.GameViewModel
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = Localizer["Create"];
 }
 
-<h1>Create</h1>
+<h1>@Localizer["Create"]</h1>
 
-<h4>Game</h4>
+<h4>@Localizer["Game"]</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -42,14 +43,14 @@
                 <select asp-for="DeveloperId" class ="form-control" asp-items="ViewBag.DeveloperId"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="@Localizer["Save"]" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@Localizer["Back to List"]</a>
 </div>
 
 @section Scripts {

@@ -1,2 +1,9 @@
-﻿<h2>Congratulations!</h2>
-<p>Items have been added to your library</p>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+	ViewData["Title"] = Localizer["Checkout"];
+}
+
+<h2>@Localizer["Congratulations!"]</h2>
+<p>@Localizer["The games have been added to your library"]</p>
