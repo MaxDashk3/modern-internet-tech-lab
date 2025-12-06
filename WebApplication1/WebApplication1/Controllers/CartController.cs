@@ -72,32 +72,40 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Checkout()
         {
             var cart = HttpContext.Session.Get<List<CartItem>>("Cart");
+
             if (cart == null || !cart.Any())
             {
-                RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
             }
 
             var userId = _userManager.GetUserId(User);
+
             var user = await _repository.All<User>()
                 .Include(u => u.Games)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null) return RedirectToAction("Login", "Account");
 
-            foreach (var item in cart)
-            {
-                var game = await _repository.FirstOrDefaultAsync<Game>(g => g.Id == item.GameId);
+            var cartGameIds = cart.Select(c => c.GameId).Distinct().ToList();
 
-                if (game != null)
+            var gamesToAdd = await _repository.All<Game>()
+                                              .Where(g => cartGameIds.Contains(g.Id))
+                                              .ToListAsync();
+            bool isModified = false;
+
+            foreach (var game in gamesToAdd)
+            {
+                // Check local collection (no DB call needed here)
+                if (!user.Games.Any(g => g.Id == game.Id))
                 {
-                    // CHECK: Does the user already own this?
-                    if (!user.Games.Any(g => g.Id == game.Id))
-                    {
-                        user.Games.Add(game);
-                    }
+                    user.Games.Add(game);
+                    isModified = true;
                 }
             }
-            await _repository.UpdateAsync(user);
+            if (isModified)
+            {
+                await _repository.UpdateAsync(user);
+            }
             HttpContext.Session.Remove("Cart");
             return View();
         }
